@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  /* Developer Intelligence Colors from DESIGN.MD */
+  --color-primary: #adc6ff;
+  --color-on-primary: #002e6a;
+  --color-primary-container: #4d8eff;
+  --color-on-primary-container: #00285d;
+  
+  --color-secondary: #4edea3;
+  --color-on-secondary: #003824;
+  --color-secondary-container: #00a572;
+  --color-on-secondary-container: #00311f;
+  
+  --color-tertiary: #cebdff;
+  --color-on-tertiary: #381385;
+  --color-tertiary-container: #9b7fed;
+  --color-on-tertiary-container: #31057e;
+  
+  --color-surface: #10141a;
+  --color-on-surface: #dfe2eb;
+  --color-on-surface-variant: #c2c6d6;
+  --color-outline: #8c909f;
+  --color-outline-variant: #424754;
+  
+  --color-background: #10141a;
+  --color-on-background: #dfe2eb;
+  
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+:root {
+  --background: 216 23% 8%; /* #10141a */
+  --foreground: 226 21% 92%; /* #dfe2eb */
+  --card: 216 23% 8%;
+  --card-foreground: 226 21% 92%;
+  --popover: 216 23% 8%;
+  --popover-foreground: 226 21% 92%;
+  --primary: 222 100% 84%; /* #adc6ff */
+  --primary-foreground: 214 100% 21%; /* #002e6a */
+  --secondary: 156 70% 59%; /* #4edea3 */
+  --secondary-foreground: 159 100% 11%; /* #003824 */
+  --muted: 216 16% 15%; /* surface-container-low */
+  --muted-foreground: 226 19% 80%; /* on-surface-variant */
+  --accent: 216 16% 25%; /* surface-container-high */
+  --accent-foreground: 226 21% 92%;
+  --destructive: 0 100% 83%; /* error */
+  --destructive-foreground: 357 100% 21%; /* on-error */
+  --border: 226 8% 59%; /* outline */
+  --input: 226 8% 59%;
+  --ring: 222 100% 84%;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-outline/20;
+  }
+  body {
+    @apply bg-background text-on-background;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+.glass {
+  background: rgba(16, 20, 26, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(140, 144, 159, 0.2);
+}
+
+.card-gradient {
+  background: linear-gradient(135deg, rgba(28, 32, 38, 1) 0%, rgba(16, 20, 26, 1) 100%);
+}
