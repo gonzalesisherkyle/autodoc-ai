@@ -59,9 +59,41 @@
   * {
     @apply border-outline/20;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-on-background;
     font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-outline/20 rounded-full transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/40;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/30 text-on-surface;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #8c909f20 transparent;
   }
 }
 
