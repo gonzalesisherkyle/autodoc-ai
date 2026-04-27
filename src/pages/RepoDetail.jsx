@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { ChevronLeft, FileText, Code, Folder, Search, CornerDownRight, Book } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ChevronLeft, FileText, Code, Folder, Search, CornerDownRight, Book, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -11,20 +11,47 @@ const RepoDetail = () => {
   const { id } = useParams();
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [search, setSearch] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const syncMutation = useMutation({
+    mutationFn: () => axios.post(`${API_BASE}/docs/analyze-file`, {
+      repoId: id,
+      fileId: selectedFileId
+    }, { withCredentials: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['repo', id]);
+      queryClient.invalidateQueries(['docs', id]);
+      queryClient.invalidateQueries(['structure', id]);
+    }
+  });
 
   const { data: repo } = useQuery({
     queryKey: ['repo', id],
-    queryFn: () => axios.get(`${API_BASE}/repos`, { withCredentials: true }).then(res => res.data.find(r => r._id === id))
+    queryFn: () => axios.get(`${API_BASE}/repos`, { withCredentials: true }).then(res => res.data.find(r => r._id === id)),
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return ['syncing', 'analyzing', 'generating'].includes(status) ? 2000 : false;
+    }
   });
 
   const { data: structure } = useQuery({
     queryKey: ['structure', id],
-    queryFn: () => axios.get(`${API_BASE}/docs/structure/${id}`, { withCredentials: true }).then(res => res.data)
+    queryFn: () => axios.get(`${API_BASE}/docs/structure/${id}`, { withCredentials: true }).then(res => res.data),
+    refetchInterval: (query) => {
+      const isSyncing = query.state.data?.some(s => ['syncing', 'analyzing'].includes(s.status));
+      return isSyncing ? 2000 : false;
+    }
   });
 
   const { data: docs } = useQuery({
     queryKey: ['docs', id],
-    queryFn: () => axios.get(`${API_BASE}/docs/${id}`, { withCredentials: true }).then(res => res.data)
+    queryFn: () => axios.get(`${API_BASE}/docs/${id}`, { withCredentials: true }).then(res => res.data),
+    refetchInterval: () => {
+      const isAnyBusy = ['syncing', 'analyzing', 'generating'].includes(repo?.status) || 
+                        structure?.some(s => ['syncing', 'analyzing'].includes(s.status));
+      return isAnyBusy ? 2000 : false;
+    }
   });
 
   const filteredDocs = docs?.filter(doc =>
@@ -32,16 +59,37 @@ const RepoDetail = () => {
     doc.content.toLowerCase().includes(search.toLowerCase())
   );
 
-  const selectedFileDocs = docs?.filter(d => d.file?._id === selectedFileId);
+  const selectedFileDocs = docs?.filter(d => d.file?._id.toString() === selectedFileId?.toString());
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar - File Explorer */}
-      <div className="w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+      <div className={`
+        fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
         <div className="p-4 border-b border-slate-100 dark:border-slate-800">
-          <Link to="/dashboard" className="flex items-center gap-2 text-slate-500 hover:text-primary-600 mb-4 transition-colors">
-            <ChevronLeft className="w-4 h-4" /> Back to Dashboard
-          </Link>
+          <div className="flex items-center justify-between lg:block">
+            <Link to="/dashboard" className="flex items-center gap-2 text-slate-500 hover:text-primary-600 mb-4 transition-colors">
+              <ChevronLeft className="w-4 h-4" /> Back to Dashboard
+            </Link>
+            <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 text-slate-400">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
           <h2 className="font-bold text-lg truncate">{repo?.name}</h2>
           <div className="relative mt-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -58,7 +106,10 @@ const RepoDetail = () => {
           {structure?.filter(s => s.type === 'file').map(file => (
             <button
               key={file._id}
-              onClick={() => setSelectedFileId(file._id)}
+              onClick={() => {
+                setSelectedFileId(file._id);
+                setIsSidebarOpen(false);
+              }}
               className={`w-full flex items-center gap-2 p-2.5 rounded-xl text-sm transition-all ${selectedFileId === file._id ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
             >
               <FileText className="w-4 h-4 opacity-70" />
@@ -69,9 +120,22 @@ const RepoDetail = () => {
       </div>
 
       {/* Main Content - Doc Viewer */}
-      <div className="flex-1 overflow-y-auto p-12">
-        {selectedFileId ? (
-          <div className="max-w-4xl mx-auto">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-12">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between mb-6 lg:hidden">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm"
+            >
+              <Folder className="w-6 h-6 text-primary-600" />
+            </button>
+            <h2 className="font-bold truncate px-4">{repo?.name}</h2>
+            <div className="w-10"></div> {/* Spacer */}
+          </div>
+
+          {selectedFileId ? (
+            <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={selectedFileId}>
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl">
@@ -97,13 +161,13 @@ const RepoDetail = () => {
                         </div>
                         <span className="text-[10px] text-slate-400">v{doc.version}</span>
                       </div>
-                      <div className="p-8 prose dark:prose-invert max-w-none">
-                        <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <div className="p-4 md:p-8 prose dark:prose-invert max-w-none">
+                        <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 leading-relaxed text-sm md:text-base">
                           {doc.content}
                         </div>
                         {doc.ir?.codeSnippet && (
-                          <div className="mt-8 bg-slate-950 rounded-2xl p-6 overflow-x-auto shadow-inner border border-white/5">
-                            <pre className="text-sm font-mono text-slate-300">
+                          <div className="mt-6 md:mt-8 bg-slate-950 rounded-xl md:rounded-2xl p-4 md:p-6 overflow-x-auto shadow-inner border border-white/5">
+                            <pre className="text-xs md:text-sm font-mono text-slate-300">
                               <code>{doc.ir.codeSnippet}</code>
                             </pre>
                           </div>
@@ -114,7 +178,15 @@ const RepoDetail = () => {
                 ) : (
                   <div className="text-center py-20 bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
                     <p className="text-slate-400">No documentation generated for this file yet.</p>
-                    <button className="mt-4 text-primary-600 font-semibold hover:underline">Trigger analysis</button>
+                    <button 
+                      onClick={() => syncMutation.mutate()}
+                      disabled={syncMutation.isPending || ['syncing', 'analyzing'].includes(structure?.find(s => s._id.toString() === selectedFileId?.toString())?.status)}
+                      className="mt-4 text-primary-600 font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {syncMutation.isPending || ['syncing', 'analyzing'].includes(structure?.find(s => s._id.toString() === selectedFileId?.toString())?.status) 
+                        ? 'Analyzing...' 
+                        : 'Trigger analysis'}
+                    </button>
                   </div>
                 )}
               </div>
@@ -129,7 +201,8 @@ const RepoDetail = () => {
         )}
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default RepoDetail;

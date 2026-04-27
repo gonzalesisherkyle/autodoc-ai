@@ -45,15 +45,15 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-10">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Your Repositories</h1>
-          <p className="text-slate-500">Manage and sync your codebase documentation.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Your Repositories</h1>
+          <p className="text-slate-500 text-sm md:text-base">Manage and sync your codebase documentation.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white py-2.5 px-5 rounded-xl font-medium transition-all shadow-md"
+          className="w-full md:w-auto flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white py-2.5 px-5 rounded-xl font-medium transition-all shadow-md"
         >
           <Plus className="w-5 h-5" />
           Connect Repository
@@ -117,7 +117,7 @@ const Dashboard = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative z-10"
+              className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden relative z-10"
             >
               <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <h2 className="text-xl font-bold">Select a Repository</h2>
