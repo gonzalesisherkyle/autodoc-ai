@@ -21,8 +21,8 @@ const RepoDetail = () => {
     }, { withCredentials: true }),
     onSuccess: () => {
       queryClient.invalidateQueries(['repo', id]);
-      queryClient.invalidateQueries(['docs', id]);
       queryClient.invalidateQueries(['structure', id]);
+      queryClient.invalidateQueries(['docs', id]);
     }
   });
 

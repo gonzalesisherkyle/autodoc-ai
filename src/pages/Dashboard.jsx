@@ -14,7 +14,11 @@ const Dashboard = () => {
   // Fetch connected repos
   const { data: connectedRepos, isLoading: isLoadingConnected } = useQuery({
     queryKey: ['repos'],
-    queryFn: () => axios.get(`${API_BASE}/repos`, { withCredentials: true }).then(res => res.data)
+    queryFn: () => axios.get(`${API_BASE}/repos`, { withCredentials: true }).then(res => res.data),
+    refetchInterval: (query) => {
+      const isAnyBusy = query.state.data?.some(r => ['syncing', 'analyzing', 'generating'].includes(r.status));
+      return isAnyBusy ? 3000 : false;
+    }
   });
 
   // Fetch user's GitHub repos (for modal)
