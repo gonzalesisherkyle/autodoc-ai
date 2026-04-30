@@ -36,7 +36,7 @@ const Layout = () => {
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-6 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold tracking-tight text-primary-600">AutoDoc AI</Link>
+          <Link to="/" className="text-2xl font-bold tracking-tight text-primary-500 font-display">GitOpsDocs</Link>
           <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400">
             <X className="w-6 h-6" />
           </button>
@@ -48,7 +48,7 @@ const Layout = () => {
               key={item.name}
               to={item.path}
               onClick={() => setIsSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${location.pathname === item.path ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all ${location.pathname === item.path ? 'bg-primary-500/10 text-primary-400 border-l-2 border-primary-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
             >
               <item.icon className="w-5 h-5" />
               {item.name}
@@ -84,7 +84,7 @@ const Layout = () => {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <span className="font-bold text-primary-600">AutoDoc AI</span>
+          <span className="font-bold text-primary-500 font-display">GitOpsDocs</span>
           <img src={user?.avatarUrl} alt={user?.username} className="w-8 h-8 rounded-full" />
         </header>
 

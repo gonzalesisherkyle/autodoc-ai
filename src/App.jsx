@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from './pages/Dashboard';
-import RepoDetail from './pages/RepoDetail';
+import Infrastructure from './pages/Infrastructure';
 import Login from './pages/Login';
 import Layout from './components/Layout';
 import { AuthProvider, useAuth } from './hooks/useAuth';
@@ -34,7 +34,7 @@ function App() {
             }>
               <Route index element={<Navigate to="/dashboard" />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="repo/:id" element={<RepoDetail />} />
+              <Route path="infrastructure/:id" element={<Infrastructure />} />
               <Route path="docs" element={<DocsList />} />
               <Route path="settings" element={<Settings />} />
             </Route>

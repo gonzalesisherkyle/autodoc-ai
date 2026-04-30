@@ -18,14 +18,14 @@ const MermaidRenderer = ({ chart }) => {
 
     const render = async () => {
       if (!ref.current || !chart) return;
-      
+
       try {
         // Increment count to ensure unique ID per render if needed, 
         // but Mermaid.render needs a clean target
         ref.current.innerHTML = '<div class="flex items-center justify-center p-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
-        
+
         const { svg } = await mermaid.render(`${containerId.current}-${renderCount.current++}`, chart);
-        
+
         if (isMounted && ref.current) {
           ref.current.innerHTML = svg;
         }
@@ -49,9 +49,9 @@ const MermaidRenderer = ({ chart }) => {
   }, [chart]);
 
   return (
-    <div 
-      className="mermaid-container overflow-x-auto flex justify-center py-4" 
-      ref={ref} 
+    <div
+      className="mermaid-container overflow-x-auto flex justify-center py-4"
+      ref={ref}
     />
   );
 };
