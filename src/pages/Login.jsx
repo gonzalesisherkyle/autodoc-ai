@@ -11,8 +11,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden font-body">
       {/* Background Subtle Gradient */}
       <div className="absolute top-0 left-0 w-full h-[60vh] bg-gradient-to-b from-primary/5 to-transparent"></div>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-lg relative z-10 px-6"
@@ -23,7 +23,7 @@ const Login = () => {
               <Terminal className="w-12 h-12" />
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-white mb-3 font-display uppercase">
-              GitOps<span className="text-primary">Docs</span>
+              AutoDoc<span className="text-primary">AI</span>
             </h1>
             <p className="text-muted text-lg font-medium">
               Authoritative Infrastructure Intelligence.
