@@ -8,18 +8,28 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          DEFAULT: '#FCD535',
+          active: '#f0b90b',
+          disabled: '#3a3a1f',
+        },
+        surface: {
+          DEFAULT: '#0b0e11',
+          card: '#1e2329',
+          elevated: '#2b3139',
+        },
+        trading: {
+          up: '#0ecb81',
+          down: '#f6465d',
         },
       },
+      spacing: {
+        'section': '80px',
+      },
+      borderRadius: {
+        'md': '6px',
+        'lg': '8px',
+        'xl': '12px',
+      }
     },
   },
   plugins: [],

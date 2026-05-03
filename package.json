@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "gitops-docs-dashboard",
   "private": true,
   "version": "0.0.0",
   "type": "module",
