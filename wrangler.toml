@@ -3,4 +3,4 @@ pages_build_output_dir = "dist"
 compatibility_date = "2026-05-13"
 
 [vars]
-VITE_API_URL = "https://resume-ai-api.isher.dev"
+VITE_API_BASE = "https://resume-ai-api.isher.dev"
