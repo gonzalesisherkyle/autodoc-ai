@@ -61,7 +61,7 @@ const DiagramCard = ({ diagram }) => {
   );
 };
 
-const DiagramGallery = ({ diagrams, onRegenerate }) => {
+const DiagramGallery = ({ diagrams, onRegenerate, isRegenerating = false }) => {
   if (!diagrams || diagrams.length === 0) {
     return (
       <div className="text-center py-20 bg-slate-900/30 border-2 border-dashed border-slate-800 rounded-lg">
@@ -69,9 +69,10 @@ const DiagramGallery = ({ diagrams, onRegenerate }) => {
         <p className="text-slate-400 font-medium">No system diagrams generated yet.</p>
         <button
           onClick={onRegenerate}
-          className="mt-4 bg-primary hover:bg-primary-active text-ink px-6 py-2 rounded-md text-sm font-bold transition-all"
+          disabled={isRegenerating}
+          className="mt-4 bg-primary hover:bg-primary-active text-ink px-6 py-2 rounded-md text-sm font-bold transition-all disabled:opacity-50"
         >
-          Generate Infrastructure Map
+          {isRegenerating ? 'Generating...' : 'Generate Infrastructure Map'}
         </button>
       </div>
     );

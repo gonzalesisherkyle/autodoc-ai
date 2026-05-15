@@ -357,6 +357,7 @@ const Infrastructure = () => {
                   <DiagramGallery
                     diagrams={diagrams}
                     onRegenerate={() => analyzeVisualsMutation.mutate()}
+                    isRegenerating={analyzeVisualsMutation.isPending}
                   />
                 )}
               </motion.div>

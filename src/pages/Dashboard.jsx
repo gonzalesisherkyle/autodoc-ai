@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
+const ACTIVE_REPO_STATUSES = new Set(['syncing', 'analyzing', 'generating']);
 
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +35,10 @@ const Dashboard = () => {
   const { data: environments, isLoading } = useQuery({
     queryKey: ['environments'],
     queryFn: () => axios.get(`${API_BASE}/repos`, { withCredentials: true }).then(res => res.data),
-    refetchInterval: 5000
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      return Array.isArray(data) && data.some(env => ACTIVE_REPO_STATUSES.has(env.status)) ? 10000 : false;
+    }
   });
 
   // Fetch available GitHub repos
